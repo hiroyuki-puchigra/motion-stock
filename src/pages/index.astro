@@ -1,0 +1,139 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import AnimationCard from '../components/AnimationCard.astro';
+import { parts, triggers, moods } from '../data/taxonomy';
+
+const all = (await getCollection('animations')).map((e) => e.data).sort((a, b) => b.addedAt.localeCompare(a.addedAt) || b.id.localeCompare(a.id));
+const groups = [
+  { key: 'part', label: '部品', items: parts },
+  { key: 'trigger', label: 'きっかけ', items: triggers },
+  { key: 'mood', label: '印象', items: moods },
+];
+---
+<Base>
+  <div class="wrap page">
+    <section class="filters" aria-label="絞り込み">
+      <div class="filters__search">
+        <input type="search" id="q" placeholder="キーワードで検索" aria-label="キーワード検索" />
+      </div>
+      {groups.map((g) => (
+        <div class="filters__group" data-key={g.key}>
+          <span class="filters__label">{g.label}</span>
+          <div class="filters__chips">
+            {g.items.map((i) => <button type="button" class="btn" data-value={i.slug} aria-pressed="false">{i.label}</button>)}
+          </div>
+        </div>
+      ))}
+      <div class="filters__foot">
+        <button type="button" class="btn" id="fav-toggle" aria-pressed="false">候補リスト <span id="fav-count">0</span></button>
+        <button type="button" class="btn" id="fav-copy" hidden>IDをコピー</button>
+        <button type="button" class="btn" id="reset">条件をクリア</button>
+        <p class="filters__count en"><span id="count">{all.length}</span> / {all.length} 件</p>
+      </div>
+    </section>
+
+    <ul class="grid" id="grid">
+      {all.map((a) => <AnimationCard a={a} />)}
+    </ul>
+    <p class="empty" id="empty" hidden>条件に合うアニメーションはありません。</p>
+  </div>
+</Base>
+
+<style>
+  .page { padding-top: var(--space-6); }
+  .filters { display: grid; gap: var(--space-4); padding-bottom: var(--space-6); border-bottom: 1px solid var(--color-line); margin-bottom: var(--space-6); }
+  .filters input[type='search'] { width: 100%; max-width: 360px; padding: 10px 12px; border: 1px solid var(--color-line); border-radius: var(--radius); background: var(--color-bg); }
+  .filters input[type='search']:focus { outline: none; border-color: var(--color-accent); }
+  .filters__group { display: grid; grid-template-columns: 72px 1fr; gap: var(--space-3); align-items: start; }
+  .filters__label { font-size: 12px; color: var(--color-text-sub); padding-top: 10px; }
+  .filters__chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .filters__foot { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+  .filters__count { margin-left: auto; font-size: 13px; color: var(--color-text-sub); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-5); }
+  .empty { padding-block: var(--space-7); text-align: center; color: var(--color-text-sub); }
+  @media (max-width: 600px) { .filters__group { grid-template-columns: 1fr; gap: var(--space-1); } .filters__label { padding-top: 0; } }
+</style>
+
+<script>
+  const FAV_KEY = 'motion-stock:favorites';
+  const readFavs = (): string[] => { try { return JSON.parse(localStorage.getItem(FAV_KEY) || '[]'); } catch { return []; } };
+
+  const cards = [...document.querySelectorAll<HTMLElement>('.card')];
+  const q = document.getElementById('q') as HTMLInputElement;
+  const countEl = document.getElementById('count')!;
+  const emptyEl = document.getElementById('empty')!;
+  const favToggle = document.getElementById('fav-toggle')!;
+  const favCopy = document.getElementById('fav-copy')!;
+  const favCount = document.getElementById('fav-count')!;
+  const state: Record<string, Set<string>> = { part: new Set(), trigger: new Set(), mood: new Set() };
+  let favOnly = false;
+
+  const params = new URLSearchParams(location.search);
+  for (const k of Object.keys(state)) (params.get(k) || '').split(',').filter(Boolean).forEach((v) => state[k].add(v));
+  q.value = params.get('q') || '';
+  favOnly = params.get('fav') === '1';
+
+  function apply() {
+    const favs = readFavs();
+    const kw = q.value.trim().toLowerCase();
+    let n = 0;
+    for (const c of cards) {
+      const ok =
+        (!state.part.size || state.part.has(c.dataset.part!)) &&
+        (!state.trigger.size || c.dataset.trigger!.split(' ').some((t) => state.trigger.has(t))) &&
+        (!state.mood.size || c.dataset.mood!.split(' ').some((m) => state.mood.has(m))) &&
+        (!kw || kw.split(/\s+/).every((w) => c.dataset.text!.includes(w))) &&
+        (!favOnly || favs.includes(c.dataset.id!));
+      c.hidden = !ok;
+      if (ok) n++;
+    }
+    countEl.textContent = String(n);
+    emptyEl.hidden = n > 0;
+    document.querySelectorAll<HTMLElement>('.filters__group').forEach((g) => {
+      g.querySelectorAll<HTMLElement>('button').forEach((b) => b.setAttribute('aria-pressed', String(state[g.dataset.key!].has(b.dataset.value!))));
+    });
+    favToggle.setAttribute('aria-pressed', String(favOnly));
+    favCount.textContent = String(favs.length);
+    favCopy.hidden = !favOnly;
+
+    const p = new URLSearchParams();
+    for (const [k, s] of Object.entries(state)) if (s.size) p.set(k, [...s].join(','));
+    if (kw) p.set('q', q.value.trim());
+    if (favOnly) p.set('fav', '1');
+    history.replaceState(null, '', p.toString() ? `?${p}` : location.pathname);
+  }
+
+  document.querySelectorAll<HTMLElement>('.filters__group').forEach((g) => {
+    g.addEventListener('click', (e) => {
+      const b = (e.target as HTMLElement).closest<HTMLElement>('button');
+      if (!b) return;
+      const s = state[g.dataset.key!];
+      s.has(b.dataset.value!) ? s.delete(b.dataset.value!) : s.add(b.dataset.value!);
+      apply();
+    });
+  });
+  q.addEventListener('input', apply);
+  favToggle.addEventListener('click', () => { favOnly = !favOnly; apply(); });
+  favCopy.addEventListener('click', async () => {
+    const ids = readFavs().join(', ');
+    try { await navigator.clipboard.writeText(ids); favCopy.textContent = 'コピーしました'; } catch { favCopy.textContent = ids; }
+    setTimeout(() => (favCopy.textContent = 'IDをコピー'), 1800);
+  });
+  document.getElementById('reset')!.addEventListener('click', () => {
+    Object.values(state).forEach((s) => s.clear()); q.value = ''; favOnly = false; apply();
+  });
+
+  // 動画サムネイル：画面内のみ再生、reduced-motion時は再生しない
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!reduce) {
+    const io = new IntersectionObserver((entries) => {
+      for (const en of entries) {
+        const v = en.target as HTMLVideoElement;
+        if (en.isIntersecting) v.play().catch(() => {}); else v.pause();
+      }
+    }, { threshold: 0.4 });
+    document.querySelectorAll('.card video').forEach((v) => io.observe(v));
+  }
+  apply();
+</script>

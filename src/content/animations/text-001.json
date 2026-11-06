@@ -1,0 +1,17 @@
+{
+  "id": "text-001",
+  "title": "見出しが一文字ずつ現れる",
+  "summary": "見出しが一文字ずつ、下からふわっと浮かび上がる",
+  "part": "text",
+  "trigger": ["load"],
+  "mood": ["warm","minimal"],
+  "tech": ["css","js"],
+  "cost": "S",
+  "weight": "light",
+  "sp": "ok",
+  "useCases": ["トップの見出し","メッセージ文"],
+  "proposalNote": "やさしく丁寧な印象を伝えたい、コピーを読ませたい場面に向いています。",
+  "reference": { "url": "https://example.com/", "note": "サンプル（ダミー）" },
+  "addedAt": "2026-11-06",
+  "addedBy": "hiro"
+}

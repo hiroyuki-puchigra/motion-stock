@@ -1,0 +1,49 @@
+---
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  return (await getCollection('animations')).map((e) => ({ params: { id: e.data.id }, props: { a: e.data } }));
+}
+const { a } = Astro.props;
+---
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{a.title} | Motion Stock</title>
+    <style is:global>
+      :root { --ui-bg: rgba(20,20,20,.72); --ui-fg: #fff; --fade: .2s ease; }
+      * { box-sizing: border-box; margin: 0; }
+      html, body { height: 100%; overflow: hidden; background: #fff; font-family: 'Noto Sans JP', sans-serif; }
+      body.is-dark { background: #141414; }
+      iframe { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; }
+      .bar { position: fixed; top: 12px; left: 12px; z-index: 10; display: flex; gap: 6px; opacity: 0; transition: opacity var(--fade); }
+      body:hover .bar, .bar:focus-within { opacity: 1; }
+      @media (hover: none) { .bar { opacity: 1; } }
+      .bar a, .bar button { font: inherit; font-size: 13px; color: var(--ui-fg); background: var(--ui-bg); border: 0; border-radius: 4px; padding: 8px 12px; cursor: pointer; text-decoration: none; backdrop-filter: blur(6px); }
+      .bar a:hover, .bar button:hover { background: rgba(61,107,79,.92); }
+    </style>
+  </head>
+  <body data-id={a.id}>
+    <nav class="bar" aria-label="プレゼン操作">
+      <a href={`/a/${a.id}/`}>← 戻る</a>
+      <button type="button" id="replay">リプレイ</button>
+      <button type="button" id="bg">背景: 白</button>
+    </nav>
+    <iframe id="demo" src={`/demos/${a.id}/?bg=light`} title={`${a.title} のデモ`}></iframe>
+    <script>
+      const id = document.body.dataset.id!;
+      const iframe = document.getElementById('demo') as HTMLIFrameElement;
+      let bg = new URLSearchParams(location.search).get('bg') === 'dark' ? 'dark' : 'light';
+      const bgBtn = document.getElementById('bg')!;
+      const sync = () => { document.body.classList.toggle('is-dark', bg === 'dark'); bgBtn.textContent = `背景: ${bg === 'dark' ? '黒' : '白'}`; };
+      const load = () => iframe.contentWindow?.location.replace(`/demos/${id}/?bg=${bg}`);
+      document.getElementById('replay')!.addEventListener('click', load);
+      bgBtn.addEventListener('click', () => { bg = bg === 'dark' ? 'light' : 'dark'; sync(); load(); });
+      addEventListener('keydown', (e) => { if (e.key === 'r') load(); });
+      iframe.src = `/demos/${id}/?bg=${bg}`; sync();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "id": "photo-001",
+  "title": "写真がマスクで広がる",
+  "summary": "スクロールで画面に入ると、中央から写真が四角く広がって現れる",
+  "part": "photo",
+  "trigger": ["scroll-in"],
+  "mood": ["premium","natural"],
+  "tech": ["css","js","clip-path"],
+  "cost": "M",
+  "weight": "light",
+  "sp": "ok",
+  "useCases": ["施工事例のメイン写真","会社概要の代表写真"],
+  "proposalNote": "写真の質を引き立てたい、上質さを大切にしたいサイト向けです。",
+  "reference": { "url": "https://example.com/", "note": "サンプル（ダミー）" },
+  "addedAt": "2026-11-06",
+  "addedBy": "hiro"
+}

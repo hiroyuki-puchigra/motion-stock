@@ -1,0 +1,55 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { parts, labelOf } from '../../data/taxonomy';
+
+const anims = (await getCollection('animations')).map((e) => e.data).sort((a, b) => a.id.localeCompare(b.id));
+const proposals = (await getCollection('proposals')).map((e) => e.data).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+---
+<Base title="社内トップ">
+  <div class="wrap page">
+    <p class="en eyebrow">INTERNAL</p>
+    <h1 class="title">社内トップ</h1>
+
+    <section>
+      <h2 class="h2">提案リスト（{proposals.length}）</h2>
+      <ul class="rows">
+        {proposals.map((p) => (
+          <li><a href={`/p/${p.slug}/`}><span class="main">{p.title}</span><span class="sub en">{p.createdAt} · {p.items.length}件 · /p/{p.slug}/</span></a></li>
+        ))}
+        {proposals.length === 0 && <li class="sub">まだありません</li>}
+      </ul>
+    </section>
+
+    <section>
+      <h2 class="h2">アニメーション全件（{anims.length}）</h2>
+      <table class="table">
+        <thead><tr><th>ID</th><th>タイトル</th><th>部品</th><th>参考元</th><th></th></tr></thead>
+        <tbody>
+          {anims.map((a) => (
+            <tr>
+              <td class="en"><a href={`/a/${a.id}/`}>{a.id}</a></td>
+              <td>{a.title}</td>
+              <td>{labelOf(parts, a.part)}</td>
+              <td class="ref"><a href={a.reference.url} target="_blank" rel="noopener noreferrer">{a.reference.url}</a></td>
+              <td><a class="btn" href={`/internal/code/${a.id}/`}>コード</a></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
+  </div>
+</Base>
+<style>
+  .page { padding-top: var(--space-6); display: grid; gap: var(--space-7); }
+  .eyebrow { font-size: 12px; color: var(--color-text-sub); }
+  .title { font-size: 26px; font-weight: 500; margin-top: var(--space-1); }
+  .h2 { font-size: 14px; font-weight: 500; padding-bottom: var(--space-2); border-bottom: 1px solid var(--color-line); margin-bottom: var(--space-3); }
+  .rows li a { display: grid; gap: 2px; padding: var(--space-3) 0; border-bottom: 1px solid var(--color-line); }
+  .sub { font-size: 12px; color: var(--color-text-sub); }
+  .table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .table th, .table td { text-align: left; padding: var(--space-3) var(--space-2); border-bottom: 1px solid var(--color-line); vertical-align: middle; }
+  .table th { font-size: 12px; color: var(--color-text-sub); font-weight: 400; }
+  .ref { max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+  @media (max-width: 700px) { .table { display: block; overflow-x: auto; } }
+</style>

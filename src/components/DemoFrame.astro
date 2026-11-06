@@ -1,0 +1,11 @@
+---
+interface Props { id: string; title: string; height?: string }
+const { id, title, height = 'min(60vh, 520px)' } = Astro.props;
+---
+<div class="demoframe" style={`--h:${height}`}>
+  <iframe src={`/demos/${id}/?bg=light`} title={`${title} のデモ`} loading="lazy"></iframe>
+</div>
+<style>
+  .demoframe { background: var(--color-bg-sub); border: 1px solid var(--color-line); border-radius: var(--radius); overflow: hidden; }
+  iframe { display: block; width: 100%; height: var(--h); border: 0; }
+</style>

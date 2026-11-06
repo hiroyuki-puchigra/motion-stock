@@ -1,0 +1,145 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import AnimationCard from '../../components/AnimationCard.astro';
+import { parts, triggers, moods, techs, costs, weights, sps, labelOf } from '../../data/taxonomy';
+
+export async function getStaticPaths() {
+  const all = (await getCollection('animations')).map((e) => e.data);
+  return all.map((a) => {
+    // 関連：同じ部品を優先、次に印象が重なるもの
+    const related = all
+      .filter((b) => b.id !== a.id)
+      .map((b) => ({ b, score: (b.part === a.part ? 2 : 0) + b.mood.filter((m) => a.mood.includes(m)).length }))
+      .filter((x) => x.score > 0)
+      .sort((x, y) => y.score - x.score)
+      .slice(0, 3)
+      .map((x) => x.b);
+    return { params: { id: a.id }, props: { a, related } };
+  });
+}
+const { a, related } = Astro.props;
+const rows: [string, string][] = [
+  ['部品', labelOf(parts, a.part)],
+  ['きっかけ', a.trigger.map((t) => labelOf(triggers, t)).join('、')],
+  ['印象', a.mood.map((m) => labelOf(moods, m)).join('、')],
+  ['工数目安', labelOf(costs, a.cost)],
+  ['負荷', labelOf(weights, a.weight)],
+  ['スマホ対応', labelOf(sps, a.sp)],
+];
+const demo = `/demos/${a.id}/`;
+---
+<Base title={a.title}>
+  <div class="wrap page">
+    <nav class="crumb en"><a href="/">← 一覧へ</a></nav>
+    <p class="id en">{a.id}</p>
+    <h1 class="title">{a.title}</h1>
+    <p class="summary">{a.summary}</p>
+
+    <section class="stage" data-demo={demo}>
+      <div class="stage__bar">
+        <button type="button" class="btn" id="replay">リプレイ</button>
+        <span class="stage__group" role="group" aria-label="背景">
+          <button type="button" class="btn is-active" data-bg="light">白背景</button>
+          <button type="button" class="btn" data-bg="dark">黒背景</button>
+        </span>
+        <span class="stage__group" role="group" aria-label="表示幅">
+          <button type="button" class="btn is-active" data-w="pc">PC</button>
+          <button type="button" class="btn" data-w="sp">SP 375px</button>
+        </span>
+        <a class="btn" href={`/present/${a.id}/`}>プレゼン表示</a>
+      </div>
+      <div class="stage__frame" id="frame">
+        <iframe id="demo" src={`${demo}?bg=light`} title={`${a.title} のデモ`} loading="eager"></iframe>
+      </div>
+    </section>
+
+    <div class="cols">
+      <section>
+        <h2 class="h2">使いどころ</h2>
+        <ul class="bullets">{a.useCases.map((u) => <li>{u}</li>)}</ul>
+        {a.proposalNote && <p class="note">{a.proposalNote}</p>}
+      </section>
+      <section>
+        <h2 class="h2">この動きについて</h2>
+        <dl class="spec">
+          {rows.map(([k, v]) => <><dt>{k}</dt><dd>{v}</dd></>)}
+        </dl>
+        <div class="actions">
+          <button type="button" class="btn" id="fav" data-id={a.id} aria-pressed="false">候補に追加</button>
+          <a class="btn" href={`/internal/code/${a.id}/`}>コードを見る（社内）</a>
+        </div>
+      </section>
+    </div>
+
+    {related.length > 0 && (
+      <section class="related">
+        <h2 class="h2">関連する動き</h2>
+        <ul class="grid">{related.map((r) => <AnimationCard a={r} />)}</ul>
+      </section>
+    )}
+  </div>
+</Base>
+
+<style>
+  .page { padding-top: var(--space-5); }
+  .crumb { font-size: 13px; color: var(--color-text-sub); }
+  .id { margin-top: var(--space-5); font-size: 12px; color: var(--color-text-sub); }
+  .title { font-size: clamp(22px, 3vw, 30px); font-weight: 500; line-height: 1.4; margin-top: var(--space-1); }
+  .summary { margin-top: var(--space-3); color: var(--color-text-sub); max-width: 40em; }
+  .stage { margin-top: var(--space-6); }
+  .stage__bar { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-bottom: var(--space-3); }
+  .stage__group { display: inline-flex; gap: var(--space-1); }
+  .stage__frame { background: var(--color-bg-sub); border: 1px solid var(--color-line); border-radius: var(--radius); display: flex; justify-content: center; overflow: hidden; }
+  .stage__frame iframe { width: 100%; height: min(70vh, 640px); border: 0; display: block; transition: width var(--fade); }
+  .stage__frame.is-sp iframe { width: 375px; max-width: 100%; border-inline: 1px solid var(--color-line); }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-7); margin-top: var(--space-7); }
+  .h2 { font-size: 14px; font-weight: 500; letter-spacing: .04em; padding-bottom: var(--space-2); border-bottom: 1px solid var(--color-line); margin-bottom: var(--space-4); }
+  .bullets { display: grid; gap: var(--space-2); }
+  .bullets li { padding-left: 1em; position: relative; }
+  .bullets li::before { content: '・'; position: absolute; left: -.2em; color: var(--color-accent); }
+  .note { margin-top: var(--space-4); padding: var(--space-4); background: var(--color-bg-sub); border-radius: var(--radius); font-size: 14px; }
+  .spec { display: grid; grid-template-columns: 7em 1fr; gap: var(--space-2) var(--space-4); margin: 0; }
+  .spec dt { color: var(--color-text-sub); font-size: 13px; }
+  .spec dd { margin: 0; }
+  .actions { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-5); }
+  .related { margin-top: var(--space-8); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--space-5); }
+  @media (max-width: 760px) { .cols { grid-template-columns: 1fr; gap: var(--space-6); } }
+</style>
+
+<script>
+  const stage = document.querySelector<HTMLElement>('.stage')!;
+  const demo = stage.dataset.demo!;
+  const iframe = document.getElementById('demo') as HTMLIFrameElement;
+  const frame = document.getElementById('frame')!;
+  let bg = 'light';
+  const load = () => { iframe.src = `${demo}?bg=${bg}`; };
+
+  document.getElementById('replay')!.addEventListener('click', () => {
+    // 同一URLでも確実に再読込（#reload は使わず replace で再評価）
+    iframe.contentWindow?.location.replace(`${demo}?bg=${bg}`);
+  });
+  stage.querySelectorAll<HTMLElement>('[data-bg]').forEach((b) => b.addEventListener('click', () => {
+    bg = b.dataset.bg!;
+    stage.querySelectorAll('[data-bg]').forEach((x) => x.classList.toggle('is-active', x === b));
+    load();
+  }));
+  stage.querySelectorAll<HTMLElement>('[data-w]').forEach((b) => b.addEventListener('click', () => {
+    frame.classList.toggle('is-sp', b.dataset.w === 'sp');
+    stage.querySelectorAll('[data-w]').forEach((x) => x.classList.toggle('is-active', x === b));
+  }));
+
+  // 候補（お気に入り）: localStorage
+  const KEY = 'motion-stock:favorites';
+  const read = (): string[] => { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; } };
+  const fav = document.getElementById('fav')!;
+  const id = fav.dataset.id!;
+  const paint = () => { const on = read().includes(id); fav.setAttribute('aria-pressed', String(on)); fav.textContent = on ? '候補に追加済み' : '候補に追加'; };
+  fav.addEventListener('click', () => {
+    const cur = read(); const next = cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id];
+    try { localStorage.setItem(KEY, JSON.stringify(next)); } catch {}
+    paint();
+  });
+  paint();
+</script>

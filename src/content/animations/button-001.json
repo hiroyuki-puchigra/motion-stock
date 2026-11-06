@@ -1,0 +1,17 @@
+{
+  "id": "button-001",
+  "title": "矢印が伸びるリンク",
+  "summary": "ホバーすると矢印が右へ伸び、文字色がやわらかく変わる",
+  "part": "button",
+  "trigger": ["hover"],
+  "mood": ["minimal","premium"],
+  "tech": ["css"],
+  "cost": "S",
+  "weight": "light",
+  "sp": "ok",
+  "useCases": ["詳しく見るリンク","お問い合わせボタン"],
+  "proposalNote": "派手さはなくても、操作の気持ちよさを足したいときに。",
+  "reference": { "url": "https://example.com/", "note": "サンプル（ダミー）" },
+  "addedAt": "2026-11-06",
+  "addedBy": "hiro"
+}

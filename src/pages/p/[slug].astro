@@ -1,0 +1,62 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import DemoFrame from '../../components/DemoFrame.astro';
+import { parts, moods, labelOf } from '../../data/taxonomy';
+
+export async function getStaticPaths() {
+  const anims = new Map((await getCollection('animations')).map((e) => [e.data.id, e.data]));
+  return (await getCollection('proposals')).map((e) => ({
+    params: { slug: e.data.slug },
+    props: { p: e.data, items: e.data.items.map((it) => ({ ...it, a: anims.get(it.id)! })) },
+  }));
+}
+const { p, items } = Astro.props;
+---
+<Base title={p.title}>
+  <div class="wrap">
+    <header class="cover">
+      <p class="cover__meta en">PROPOSAL · {p.createdAt}</p>
+      <h1 class="cover__title">{p.title}</h1>
+      <p class="cover__client">{p.client} 様</p>
+      <p class="cover__intro">{p.intro}</p>
+      <ol class="toc">
+        {items.map((it, i) => <li><a href={`#item-${i + 1}`}><span class="en">{String(i + 1).padStart(2, '0')}</span> {it.place}</a></li>)}
+      </ol>
+    </header>
+
+    {items.map((it, i) => (
+      <section class="item" id={`item-${i + 1}`}>
+        <p class="item__no en">{String(i + 1).padStart(2, '0')}</p>
+        <h2 class="item__place">{it.place}</h2>
+        <p class="item__title">{it.a.title}</p>
+        {it.comment && <p class="item__comment">{it.comment}</p>}
+        <DemoFrame id={it.a.id} title={it.a.title} />
+        <div class="item__foot">
+          <div class="item__tags">
+            <span class="tag">{labelOf(parts, it.a.part)}</span>
+            {it.a.mood.map((m) => <span class="tag">{labelOf(moods, m)}</span>)}
+          </div>
+          <a class="btn" href={`/present/${it.a.id}/`}>全画面で見る</a>
+        </div>
+      </section>
+    ))}
+  </div>
+</Base>
+<style>
+  .cover { padding-block: var(--space-8) var(--space-7); border-bottom: 1px solid var(--color-line); }
+  .cover__meta { font-size: 12px; color: var(--color-text-sub); }
+  .cover__title { font-size: clamp(24px, 4vw, 38px); font-weight: 500; line-height: 1.5; margin-top: var(--space-4); max-width: 22em; }
+  .cover__client { margin-top: var(--space-3); color: var(--color-text-sub); }
+  .cover__intro { margin-top: var(--space-6); max-width: 40em; }
+  .toc { margin-top: var(--space-6); display: grid; gap: var(--space-1); font-size: 14px; }
+  .toc .en { color: var(--color-text-sub); margin-right: var(--space-2); }
+  .item { padding-block: var(--space-7); border-bottom: 1px solid var(--color-line); scroll-margin-top: var(--space-4); }
+  .item__no { font-size: 12px; color: var(--color-accent); }
+  .item__place { font-size: 20px; font-weight: 500; margin-top: var(--space-1); }
+  .item__title { color: var(--color-text-sub); font-size: 14px; margin-top: var(--space-1); }
+  .item__comment { margin-top: var(--space-4); max-width: 40em; }
+  .item :global(.demoframe) { margin-top: var(--space-5); }
+  .item__foot { display: flex; flex-wrap: wrap; gap: var(--space-3); justify-content: space-between; align-items: center; margin-top: var(--space-3); }
+  .item__tags { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+</style>

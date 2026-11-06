@@ -1,0 +1,78 @@
+---
+import { getCollection } from 'astro:content';
+import { readFileSync, existsSync } from 'node:fs';
+import Base from '../../../layouts/Base.astro';
+import { techs as _t, labelOf, costs, weights, sps } from '../../../data/taxonomy';
+
+export async function getStaticPaths() {
+  return (await getCollection('animations')).map((e) => ({ params: { id: e.data.id }, props: { a: e.data } }));
+}
+const { a } = Astro.props;
+const files = [
+  { name: 'index.html', lang: 'HTML' },
+  { name: 'style.css', lang: 'CSS' },
+  { name: 'main.js', lang: 'JS' },
+]
+  .map((f) => ({ ...f, path: `./public/demos/${a.id}/${f.name}` }))
+  .filter((f) => existsSync(f.path))
+  .map((f) => ({ ...f, code: readFileSync(f.path, 'utf8') }));
+---
+<Base title={`${a.id} コード`}>
+  <div class="wrap page">
+    <nav class="crumb en"><a href="/internal/">← 社内トップ</a> ／ <a href={`/a/${a.id}/`}>詳細ページ</a></nav>
+    <p class="id en">{a.id} · INTERNAL</p>
+    <h1 class="title">{a.title}</h1>
+
+    <div class="tabs" role="tablist">
+      {files.map((f, i) => <button type="button" class={`btn${i === 0 ? ' is-active' : ''}`} role="tab" data-tab={f.name}>{f.lang}</button>)}
+      <button type="button" class="btn copy" id="copy">コピー</button>
+    </div>
+    {files.map((f, i) => (
+      <pre class="code" data-panel={f.name} hidden={i !== 0}><code>{f.code}</code></pre>
+    ))}
+
+    <section class="memo">
+      <h2 class="h2">技術メモ</h2>
+      <dl class="spec">
+        <dt>技術</dt><dd>{a.tech.join(' / ') || '—'}</dd>
+        <dt>工数目安</dt><dd>{labelOf(costs, a.cost)}</dd>
+        <dt>負荷</dt><dd>{labelOf(weights, a.weight)}</dd>
+        <dt>スマホ対応</dt><dd>{labelOf(sps, a.sp)}</dd>
+        <dt>参考元</dt><dd><a href={a.reference.url} target="_blank" rel="noopener noreferrer">{a.reference.url}</a>{a.reference.note && <span class="sub">　{a.reference.note}</span>}</dd>
+        <dt>追加</dt><dd>{a.addedAt}（{a.addedBy}）</dd>
+      </dl>
+    </section>
+  </div>
+</Base>
+<style>
+  .page { padding-top: var(--space-5); }
+  .crumb { font-size: 13px; color: var(--color-text-sub); }
+  .id { margin-top: var(--space-5); font-size: 12px; color: var(--color-text-sub); }
+  .title { font-size: clamp(22px, 3vw, 28px); font-weight: 500; margin-top: var(--space-1); }
+  .tabs { display: flex; gap: var(--space-2); margin-top: var(--space-6); }
+  .copy { margin-left: auto; }
+  .code { margin: var(--space-3) 0 0; padding: var(--space-4); background: var(--color-bg-sub); border: 1px solid var(--color-line); border-radius: var(--radius); overflow: auto; max-height: 560px; font: 13px/1.7 ui-monospace, 'SF Mono', Menlo, monospace; tab-size: 2; }
+  .code[hidden] { display: none; }
+  .memo { margin-top: var(--space-7); }
+  .h2 { font-size: 14px; font-weight: 500; padding-bottom: var(--space-2); border-bottom: 1px solid var(--color-line); margin-bottom: var(--space-4); }
+  .spec { display: grid; grid-template-columns: 7em 1fr; gap: var(--space-2) var(--space-4); margin: 0; }
+  .spec dt { color: var(--color-text-sub); font-size: 13px; }
+  .spec dd { margin: 0; word-break: break-all; }
+  .sub { color: var(--color-text-sub); font-size: 13px; }
+</style>
+<script>
+  const tabs = [...document.querySelectorAll<HTMLElement>('[data-tab]')];
+  const panels = [...document.querySelectorAll<HTMLElement>('[data-panel]')];
+  let current = tabs[0]?.dataset.tab;
+  tabs.forEach((t) => t.addEventListener('click', () => {
+    current = t.dataset.tab;
+    tabs.forEach((x) => x.classList.toggle('is-active', x === t));
+    panels.forEach((p) => (p.hidden = p.dataset.panel !== current));
+  }));
+  const copy = document.getElementById('copy')!;
+  copy.addEventListener('click', async () => {
+    const text = panels.find((p) => p.dataset.panel === current)?.textContent ?? '';
+    try { await navigator.clipboard.writeText(text); copy.textContent = 'コピーしました'; } catch { copy.textContent = 'コピーできません'; }
+    setTimeout(() => (copy.textContent = 'コピー'), 1800);
+  });
+</script>

@@ -1,0 +1,46 @@
+---
+import { existsSync } from 'node:fs';
+import { parts, moods, labelOf } from '../data/taxonomy';
+interface Props { a: { id: string; title: string; part: string; mood: string[]; cost: string; trigger: string[]; summary: string } }
+const { a } = Astro.props;
+const has = (f: string) => existsSync(`./public/demos/${a.id}/${f}`);
+const video = has('preview.webm');
+const poster = has('poster.jpg');
+---
+<li class="card" data-id={a.id} data-part={a.part} data-trigger={a.trigger.join(' ')} data-mood={a.mood.join(' ')}
+    data-text={`${a.title} ${a.summary} ${labelOf(parts, a.part)}`.toLowerCase()}>
+  <a href={`/a/${a.id}/`} class="card__link">
+    <div class="card__thumb">
+      {video ? (
+        <video muted loop playsinline preload="none" poster={poster ? `/demos/${a.id}/poster.jpg` : undefined}>
+          <source src={`/demos/${a.id}/preview.webm`} type="video/webm" />
+          {has('preview.mp4') && <source src={`/demos/${a.id}/preview.mp4`} type="video/mp4" />}
+        </video>
+      ) : poster ? (
+        <img src={`/demos/${a.id}/poster.jpg`} alt="" loading="lazy" />
+      ) : (
+        <span class="card__noprev en">{a.id}</span>
+      )}
+    </div>
+    <div class="card__body">
+      <p class="card__part">{labelOf(parts, a.part)}</p>
+      <h2 class="card__title">{a.title}</h2>
+      <div class="card__tags">
+        {a.mood.map((m) => <span class="tag">{labelOf(moods, m)}</span>)}
+        <span class="tag en">工数 {a.cost}</span>
+      </div>
+    </div>
+  </a>
+</li>
+<style>
+  .card { border: 1px solid var(--color-line); border-radius: var(--radius); overflow: hidden; }
+  .card[hidden] { display: none; }
+  .card__link { display: block; }
+  .card__thumb { aspect-ratio: 16 / 10; background: var(--color-bg-sub); display: grid; place-items: center; overflow: hidden; }
+  .card__thumb video, .card__thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .card__noprev { color: var(--color-text-sub); font-size: 12px; }
+  .card__body { padding: var(--space-4); display: grid; gap: var(--space-2); }
+  .card__part { font-size: 12px; color: var(--color-text-sub); }
+  .card__title { font-size: 16px; font-weight: 500; line-height: 1.5; }
+  .card__tags { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-1); }
+</style>

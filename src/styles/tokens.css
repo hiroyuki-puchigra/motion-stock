@@ -1,0 +1,31 @@
+:root {
+  --color-bg: #ffffff;
+  --color-bg-sub: #f5f5f3;
+  --color-text: #1a1a1a;
+  --color-text-sub: #6b6b66;
+  --color-line: #e2e2de;
+  --color-accent: #3d6b4f; /* 仮：落ち着いた緑系（未決） */
+  --color-accent-text: #ffffff;
+
+  --font-ja: 'Noto Sans JP', sans-serif;
+  --font-en: 'Inter', 'Noto Sans JP', sans-serif;
+
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+  --space-5: 24px; --space-6: 32px; --space-7: 48px; --space-8: 80px;
+
+  --radius: 4px;
+  --content-width: 1200px;
+  --gutter: clamp(16px, 4vw, 40px);
+  --fade: 0.2s ease;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #141414;
+    --color-bg-sub: #1d1d1c;
+    --color-text: #ededea;
+    --color-text-sub: #9a9a94;
+    --color-line: #2f2f2d;
+    --color-accent: #7fb594;
+    --color-accent-text: #141414;
+  }
+}
