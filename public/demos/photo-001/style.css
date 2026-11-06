@@ -1,11 +1,35 @@
-*{box-sizing:border-box;margin:0}
-:root{--bg:#fff;--fg:#1a1a1a;--ease:cubic-bezier(.22,.8,.2,1)}
-body.is-dark{--bg:#141414;--fg:#f0f0ec}
-html{background:var(--bg)}
-body{background:var(--bg);color:var(--fg);font-family:"Noto Sans JP",sans-serif;min-height:100vh}
-:root{--duration:1.4s;--start-inset:35% 30% 35% 30%}
-.spacer{height:70vh;display:grid;place-items:center;font-size:12px;opacity:.5}
-.reveal{padding:0 6vw}
-.reveal__photo{height:70vh;background:linear-gradient(135deg,#c9b79c,#7e8f74 60%,#3f5148);clip-path:inset(var(--start-inset));transition:clip-path var(--duration) var(--ease)}
-.reveal.is-in .reveal__photo{clip-path:inset(0)}
-@media (prefers-reduced-motion:reduce){.reveal__photo{clip-path:inset(0);transition:none}}
+* { box-sizing: border-box; margin: 0; }
+:root { --bg: #fff; --fg: #1a1a1a; --ease: cubic-bezier(.22, .8, .2, 1); }
+body.is-dark { --bg: #141414; --fg: #f0f0ec; }
+html { background: var(--bg); }
+body { background: var(--bg); color: var(--fg); font-family: "Noto Sans JP", sans-serif; min-height: 100vh; }
+
+/* 調整用の値：広がる時間・開始時のマスクの大きさ（上 右 下 左） */
+:root {
+  --duration: 1.4s;
+  --start-inset: 35% 30% 35% 30%;
+}
+
+.spacer {
+  height: 70vh;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  opacity: .5;
+}
+
+.reveal { padding: 0 6vw; }
+
+.reveal__photo {
+  height: 70vh;
+  background: linear-gradient(135deg, #c9b79c, #7e8f74 60%, #3f5148);
+  clip-path: inset(var(--start-inset));
+  transition: clip-path var(--duration) var(--ease);
+}
+
+/* 画面に入ったらマスクを全開にする */
+.reveal.is-in .reveal__photo { clip-path: inset(0); }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal__photo { clip-path: inset(0); transition: none; }
+}

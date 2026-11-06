@@ -1,11 +1,43 @@
-*{box-sizing:border-box;margin:0}
-:root{--bg:#fff;--fg:#1a1a1a;--ease:cubic-bezier(.22,.8,.2,1)}
-body.is-dark{--bg:#141414;--fg:#f0f0ec}
-html{background:var(--bg)}
-body{background:var(--bg);color:var(--fg);font-family:"Noto Sans JP",sans-serif;min-height:100vh}
-:root{--duration:.9s;--stagger:.07s;--distance:.6em}
-.stage{min-height:100vh;display:grid;place-items:center;padding:0 6vw}
-.heading{font-size:clamp(26px,6vw,56px);font-weight:500;letter-spacing:.08em;line-height:1.5}
-.char{display:inline-block;opacity:0;transform:translateY(var(--distance));animation:rise var(--duration) var(--ease) forwards;animation-delay:calc(var(--i)*var(--stagger) + .2s)}
-@keyframes rise{to{opacity:1;transform:none}}
-@media (prefers-reduced-motion:reduce){.char{animation:none;opacity:1;transform:none}}
+* { box-sizing: border-box; margin: 0; }
+:root { --bg: #fff; --fg: #1a1a1a; --ease: cubic-bezier(.22, .8, .2, 1); }
+body.is-dark { --bg: #141414; --fg: #f0f0ec; }
+html { background: var(--bg); }
+body { background: var(--bg); color: var(--fg); font-family: "Noto Sans JP", sans-serif; min-height: 100vh; }
+
+/* 調整用の値：1文字の動く時間・文字ごとの遅れ・浮き上がる距離 */
+:root {
+  --duration: .9s;
+  --stagger: .07s;
+  --distance: .6em;
+}
+
+.stage {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 0 6vw;
+}
+
+.heading {
+  font-size: clamp(26px, 6vw, 56px);
+  font-weight: 500;
+  letter-spacing: .08em;
+  line-height: 1.5;
+}
+
+/* JSが1文字ずつ <span class="char"> に分け、--i に文字の順番を入れる */
+.char {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(var(--distance));
+  animation: rise var(--duration) var(--ease) forwards;
+  animation-delay: calc(var(--i) * var(--stagger) + .2s);
+}
+
+@keyframes rise {
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .char { animation: none; opacity: 1; transform: none; }
+}
