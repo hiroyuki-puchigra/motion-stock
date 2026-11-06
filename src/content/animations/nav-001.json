@@ -1,0 +1,31 @@
+{
+  "id": "nav-001",
+  "title": "メニューが全面に広がる",
+  "summary": "ボタンを押すと、メニューが上から画面全体に広がり、リンクが順に現れる",
+  "part": "nav",
+  "trigger": [
+    "click"
+  ],
+  "mood": [
+    "premium",
+    "minimal"
+  ],
+  "tech": [
+    "css",
+    "js"
+  ],
+  "cost": "M",
+  "weight": "light",
+  "sp": "ok",
+  "useCases": [
+    "ヘッダーのメニュー",
+    "スマホ表示のナビゲーション"
+  ],
+  "proposalNote": "画面全体を使って、迷わず選べる落ち着いたメニューにしたいサイト向けです。",
+  "reference": {
+    "url": "https://example.com/",
+    "note": "サンプル（ダミー）"
+  },
+  "addedAt": "2026-11-06",
+  "addedBy": "hiro"
+}

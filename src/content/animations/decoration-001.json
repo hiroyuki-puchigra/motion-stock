@@ -1,0 +1,30 @@
+{
+  "id": "decoration-001",
+  "title": "背景の光がゆらめく",
+  "summary": "やわらかい色の光がゆっくり揺れて、背景に落ち着いた動きをつける",
+  "part": "decoration",
+  "trigger": [
+    "loop"
+  ],
+  "mood": [
+    "warm",
+    "natural"
+  ],
+  "tech": [
+    "css"
+  ],
+  "cost": "S",
+  "weight": "light",
+  "sp": "ok",
+  "useCases": [
+    "見出し・メッセージ部分の背景",
+    "お問い合わせ前の落ち着いたセクション"
+  ],
+  "proposalNote": "文字を邪魔せず、空間にやさしい動きと奥行きを足したいときに。",
+  "reference": {
+    "url": "https://example.com/",
+    "note": "サンプル（ダミー）"
+  },
+  "addedAt": "2026-11-06",
+  "addedBy": "hiro"
+}

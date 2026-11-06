@@ -1,0 +1,22 @@
+* { box-sizing: border-box; margin: 0; }
+:root { --bg: #fff; --fg: #1a1a1a; --ease: cubic-bezier(.22, .8, .2, 1); }
+body.is-dark { --bg: #141414; --fg: #f0f0ec; }
+html { background: var(--bg); }
+body { background: var(--bg); color: var(--fg); font-family: "Noto Sans JP", sans-serif; min-height: 100vh; }
+/* 調整用の値：移動距離・時間・カードごとの遅れ */
+:root {
+  --distance: 32px;
+  --duration: 0.9s;
+  --stagger: 0.15s;
+}
+.spacer { height: 60vh; display: grid; place-items: center; font-size: 12px; opacity: .5; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 24px; padding: 0 6vw; max-width: 1100px; margin: 0 auto; }
+.card { opacity: 0; transform: translateY(var(--distance)); transition: opacity var(--duration) var(--ease), transform var(--duration) var(--ease); transition-delay: calc(var(--i, 0) * var(--stagger)); }
+.card.is-in { opacity: 1; transform: none; }
+.card__img { aspect-ratio: 4 / 3; border-radius: 4px; }
+.card__img--1 { background: linear-gradient(135deg, #d8c3a5, #8a9a7b); }
+.card__img--2 { background: linear-gradient(135deg, #c9b79c, #5b4a3d); }
+.card__img--3 { background: linear-gradient(135deg, #b9c6c1, #3d5654); }
+.card__title { font-size: 18px; font-weight: 500; margin-top: 16px; }
+.card__text { font-size: 14px; margin-top: 6px; opacity: .7; line-height: 1.7; }
+@media (prefers-reduced-motion: reduce) { .card { opacity: 1; transform: none; transition: none; } }

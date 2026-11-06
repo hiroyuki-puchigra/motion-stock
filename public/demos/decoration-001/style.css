@@ -1,0 +1,26 @@
+* { box-sizing: border-box; margin: 0; }
+:root { --bg: #fff; --fg: #1a1a1a; --ease: cubic-bezier(.22, .8, .2, 1); }
+body.is-dark { --bg: #141414; --fg: #f0f0ec; }
+html { background: var(--bg); }
+body { background: var(--bg); color: var(--fg); font-family: "Noto Sans JP", sans-serif; min-height: 100vh; }
+/* 調整用の値：ぼかし量・揺れの時間・光の色 */
+:root {
+  --blur: 70px;
+  --drift-time: 14s;
+  --c1: #e8d5b5;
+  --c2: #b7cdb0;
+  --c3: #f0c9b8;
+}
+.stage { position: relative; min-height: 100vh; display: grid; place-items: center; overflow: hidden; }
+.blob { position: absolute; border-radius: 50%; filter: blur(var(--blur)); opacity: .75; animation: drift var(--drift-time) ease-in-out infinite alternate; }
+.blob--1 { width: 46vmax; height: 46vmax; background: var(--c1); top: -12vmax; left: -8vmax; }
+.blob--2 { width: 40vmax; height: 40vmax; background: var(--c2); right: -10vmax; bottom: -10vmax; animation-delay: -5s; }
+.blob--3 { width: 28vmax; height: 28vmax; background: var(--c3); top: 30%; left: 40%; animation-delay: -9s; }
+body.is-dark .blob { opacity: .35; }
+@keyframes drift {
+  0%   { transform: translate(0, 0) scale(1); }
+  50%  { transform: translate(6vmax, -4vmax) scale(1.12); }
+  100% { transform: translate(-5vmax, 5vmax) scale(.94); }
+}
+.stage__text { position: relative; font-size: clamp(18px, 3.4vw, 30px); letter-spacing: .2em; font-weight: 500; }
+@media (prefers-reduced-motion: reduce) { .blob { animation: none; } }

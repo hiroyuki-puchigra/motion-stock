@@ -1,0 +1,31 @@
+{
+  "id": "loading-001",
+  "title": "数字が進み幕が上がる",
+  "summary": "読み込みの数字が進み、100%になると幕が上がってページが現れる",
+  "part": "loading",
+  "trigger": [
+    "load"
+  ],
+  "mood": [
+    "premium",
+    "minimal"
+  ],
+  "tech": [
+    "css",
+    "js"
+  ],
+  "cost": "M",
+  "weight": "light",
+  "sp": "ok",
+  "useCases": [
+    "サイトの読み込み画面",
+    "トップページのオープニング"
+  ],
+  "proposalNote": "最初の印象に特別感を出したい、世界観を大切にするサイト向けです。",
+  "reference": {
+    "url": "https://example.com/",
+    "note": "サンプル（ダミー）"
+  },
+  "addedAt": "2026-11-06",
+  "addedBy": "hiro"
+}

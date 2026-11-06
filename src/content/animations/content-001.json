@@ -1,0 +1,31 @@
+{
+  "id": "content-001",
+  "title": "カードが順に浮かび上がる",
+  "summary": "スクロールで画面に入ると、カードが1枚ずつ時間差で下から浮かび上がる",
+  "part": "content",
+  "trigger": [
+    "scroll-in"
+  ],
+  "mood": [
+    "warm",
+    "minimal"
+  ],
+  "tech": [
+    "css",
+    "js"
+  ],
+  "cost": "S",
+  "weight": "light",
+  "sp": "ok",
+  "useCases": [
+    "家づくりのこだわり紹介",
+    "サービスや強みの一覧"
+  ],
+  "proposalNote": "情報を一度に見せず、順に読んでもらいたいときに。やさしい印象に仕上がります。",
+  "reference": {
+    "url": "https://example.com/",
+    "note": "サンプル（ダミー）"
+  },
+  "addedAt": "2026-11-06",
+  "addedBy": "hiro"
+}

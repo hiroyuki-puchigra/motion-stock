@@ -1,0 +1,27 @@
+* { box-sizing: border-box; margin: 0; }
+:root { --bg: #fff; --fg: #1a1a1a; --ease: cubic-bezier(.22, .8, .2, 1); }
+body.is-dark { --bg: #141414; --fg: #f0f0ec; }
+html { background: var(--bg); }
+body { background: var(--bg); color: var(--fg); font-family: "Noto Sans JP", sans-serif; min-height: 100vh; }
+/* 調整用の値：開閉時間・リンクの遅れ・メニュー背景 */
+:root {
+  --duration: 0.7s;
+  --stagger: 0.08s;
+  --menu-bg: #26352c;
+}
+.header { position: fixed; inset: 0 0 auto 0; z-index: 20; display: flex; justify-content: space-between; align-items: center; padding: 20px 6vw; }
+.header__logo { letter-spacing: .2em; font-size: 14px; transition: color .4s; }
+.nav__toggle { position: relative; width: 44px; height: 44px; border: 0; background: none; cursor: pointer; color: var(--fg); transition: color .4s; }
+.nav__toggle span { position: absolute; left: 10px; width: 24px; height: 1px; background: currentColor; transition: transform var(--duration) var(--ease), top var(--duration) var(--ease); }
+.nav__toggle span:nth-child(1) { top: 17px; }
+.nav__toggle span:nth-child(2) { top: 26px; }
+body.is-open .nav__toggle, body.is-open .header__logo { color: #fff; }
+body.is-open .nav__toggle span:nth-child(1) { top: 21px; transform: rotate(45deg); }
+body.is-open .nav__toggle span:nth-child(2) { top: 21px; transform: rotate(-45deg); }
+.menu { position: fixed; inset: 0; z-index: 10; background: var(--menu-bg); clip-path: inset(0 0 100% 0); transition: clip-path var(--duration) var(--ease); display: grid; place-items: center; visibility: hidden; }
+body.is-open .menu { clip-path: inset(0); visibility: visible; }
+.menu__list { list-style: none; padding: 0; display: grid; gap: 20px; }
+.menu__link { display: inline-block; color: #fff; text-decoration: none; font-size: clamp(22px, 4vw, 34px); letter-spacing: .1em; opacity: 0; transform: translateY(16px); transition: opacity .5s var(--ease), transform .6s var(--ease); }
+body.is-open .menu__link { opacity: 1; transform: none; transition-delay: calc(.25s + var(--i) * var(--stagger)); }
+.hero { min-height: 100vh; display: grid; place-items: center; font-size: 13px; opacity: .5; }
+@media (prefers-reduced-motion: reduce) { .menu, .menu__link, .nav__toggle span { transition: none; } }

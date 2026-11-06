@@ -1,0 +1,31 @@
+* { box-sizing: border-box; margin: 0; }
+:root { --bg: #fff; --fg: #1a1a1a; --ease: cubic-bezier(.22, .8, .2, 1); }
+body.is-dark { --bg: #141414; --fg: #f0f0ec; }
+html { background: var(--bg); }
+body { background: var(--bg); color: var(--fg); font-family: "Noto Sans JP", sans-serif; min-height: 100vh; }
+/* 調整用の値：切り替え間隔・ズーム量・フェード時間 */
+:root {
+  --interval: 2.6s;
+  --fade: 1.1s;
+  --zoom: 1.08;
+}
+.mv { position: relative; height: 100vh; min-height: 420px; overflow: hidden; background: #222; }
+.mv__slide { position: absolute; inset: 0; opacity: 0; transform: scale(1); animation: slide calc(var(--interval) * 3) infinite; }
+.mv__slide--1 { background: linear-gradient(135deg, #d8c3a5, #8a9a7b 65%, #46594c); animation-delay: 0s; }
+.mv__slide--2 { background: linear-gradient(160deg, #c9b79c, #a58f78 55%, #5b4a3d); animation-delay: var(--interval); }
+.mv__slide--3 { background: linear-gradient(120deg, #b9c6c1, #7e9c97 50%, #3d5654); animation-delay: calc(var(--interval) * 2); }
+@keyframes slide {
+  0%   { opacity: 0; transform: scale(1); }
+  12%  { opacity: 1; }
+  33%  { opacity: 1; }
+  45%  { opacity: 0; transform: scale(var(--zoom)); }
+  100% { opacity: 0; transform: scale(var(--zoom)); }
+}
+.mv__shade { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.35), transparent 55%); }
+.mv__copy { position: absolute; left: 6vw; bottom: 12vh; color: #fff; font-size: clamp(24px, 5vw, 48px); letter-spacing: .1em; line-height: 1.6; opacity: 0; transform: translateY(20px); animation: copy 1.2s var(--ease) .4s forwards; }
+@keyframes copy { to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .mv__slide { animation: none; }
+  .mv__slide--1 { opacity: 1; }
+  .mv__copy { animation: none; opacity: 1; transform: none; }
+}

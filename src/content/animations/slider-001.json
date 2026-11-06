@@ -1,0 +1,31 @@
+{
+  "id": "slider-001",
+  "title": "写真が横に流れ続ける",
+  "summary": "施工写真が横へゆっくり流れ続け、マウスを乗せると止まって見やすくなる",
+  "part": "slider",
+  "trigger": [
+    "loop",
+    "hover"
+  ],
+  "mood": [
+    "natural",
+    "pop"
+  ],
+  "tech": [
+    "css"
+  ],
+  "cost": "S",
+  "weight": "light",
+  "sp": "ok",
+  "useCases": [
+    "施工事例の写真ギャラリー",
+    "トップページの雰囲気づくり"
+  ],
+  "proposalNote": "たくさんの実績を、操作なしでさりげなく見せたいときに向いています。",
+  "reference": {
+    "url": "https://example.com/",
+    "note": "サンプル（ダミー）"
+  },
+  "addedAt": "2026-11-06",
+  "addedBy": "hiro"
+}

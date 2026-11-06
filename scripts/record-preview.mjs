@@ -2,6 +2,8 @@
 //   npm run preview:record            → preview.webm が無いデモすべて
 //   npm run preview:record -- photo-001 text-001   → 指定IDを再生成
 // ホバー系デモは index.html の <head> に <meta name="preview-hover" content=".対象セレクタ"> を置く
+// 常時ループ・読み込み時など、長めに録りたいデモは <meta name="preview-duration" content="6000">（ミリ秒）
+// クリック系（メニュー開閉など）は <meta name="preview-click" content=".トリガーのセレクタ">（開く→閉じるの1往復）
 // 出力: public/demos/[id]/{preview.webm, poster.jpg, preview.mp4(Safari用。ffmpeg-static で変換)}
 import { chromium } from 'playwright';
 import { createServer } from 'node:http';
@@ -57,7 +59,8 @@ for (const id of targets) {
     const ctx = await browser.newContext({ viewport: SIZE, recordVideo: { dir: tmp, size: SIZE }, reducedMotion: 'no-preference' });
     const page = await ctx.newPage();
     await page.goto(`${base}/demos/${id}/?bg=light`, { waitUntil: 'load' });
-    await page.waitForTimeout(HOLD_MS);
+    const meta = (name) => page.evaluate((n) => document.querySelector(`meta[name="${n}"]`)?.content, name);
+    await page.waitForTimeout(Number(await meta('preview-duration')) || HOLD_MS);
 
     // スクロールできるデモは、ゆっくり下まで送って動きのきっかけを作る
     let posterDone = false;
@@ -77,7 +80,15 @@ for (const id of targets) {
     }
 
     // ホバー/クリック系：<meta name="preview-hover" content=".selector"> があれば、その要素に乗せて外す（2往復）
-    const hoverSel = await page.evaluate(() => document.querySelector('meta[name="preview-hover"]')?.content);
+    const hoverSel = await meta('preview-hover');
+    const clickSel = await meta('preview-click');
+    if (clickSel) {
+      await page.click(clickSel); await page.waitForTimeout(1700);
+      // ポスターは「開いた状態」で撮る
+      if (!posterDone) { await page.screenshot({ path: join(out, 'poster.jpg'), type: 'jpeg', quality: 85 }); posterDone = true; }
+      await page.waitForTimeout(900);
+      await page.click(clickSel); await page.waitForTimeout(1000);
+    }
     if (hoverSel) {
       for (let i = 0; i < 2; i++) {
         await page.hover(hoverSel);

@@ -1,0 +1,31 @@
+{
+  "id": "mv-001",
+  "title": "写真が重なり合って切り替わる",
+  "summary": "ゆっくり拡大しながら写真が重なり合って切り替わり、キャッチコピーがふわっと現れる",
+  "part": "mv",
+  "trigger": [
+    "load",
+    "loop"
+  ],
+  "mood": [
+    "premium",
+    "natural"
+  ],
+  "tech": [
+    "css"
+  ],
+  "cost": "S",
+  "weight": "light",
+  "sp": "ok",
+  "useCases": [
+    "トップページのメインビジュアル",
+    "施工事例を順に見せるオープニング"
+  ],
+  "proposalNote": "最初の数秒で、会社の世界観と暮らしのイメージを伝えたい場面に向いています。",
+  "reference": {
+    "url": "https://example.com/",
+    "note": "サンプル（ダミー）"
+  },
+  "addedAt": "2026-11-06",
+  "addedBy": "hiro"
+}

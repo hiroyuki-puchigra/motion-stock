@@ -1,0 +1,25 @@
+* { box-sizing: border-box; margin: 0; }
+:root { --bg: #fff; --fg: #1a1a1a; --ease: cubic-bezier(.22, .8, .2, 1); }
+body.is-dark { --bg: #141414; --fg: #f0f0ec; }
+html { background: var(--bg); }
+body { background: var(--bg); color: var(--fg); font-family: "Noto Sans JP", sans-serif; min-height: 100vh; }
+/* 調整用の値：1周の時間・写真サイズ・間隔 */
+:root {
+  --loop-time: 24s;
+  --item-width: 280px;
+  --item-gap: 20px;
+}
+.gallery { min-height: 100vh; display: grid; align-items: center; overflow: hidden; }
+.gallery__track { display: flex; width: max-content; animation: flow var(--loop-time) linear infinite; }
+.gallery:hover .gallery__track { animation-play-state: paused; }
+.gallery__set { display: flex; gap: var(--item-gap); padding-right: var(--item-gap); }
+.gallery__item { width: var(--item-width); aspect-ratio: 3 / 4; border-radius: 4px; }
+.gallery__item:nth-child(even) { transform: translateY(32px); }
+.g1 { background: linear-gradient(160deg, #d8c3a5, #8a9a7b); }
+.g2 { background: linear-gradient(160deg, #b9c6c1, #3d5654); }
+.g3 { background: linear-gradient(160deg, #c9b79c, #5b4a3d); }
+.g4 { background: linear-gradient(160deg, #cfd6c2, #6e8466); }
+.g5 { background: linear-gradient(160deg, #d9c7b8, #8a6f5c); }
+@keyframes flow { to { transform: translateX(-50%); } }
+@media (max-width: 600px) { :root { --item-width: 200px; } }
+@media (prefers-reduced-motion: reduce) { .gallery { overflow-x: auto; } .gallery__track { animation: none; } }

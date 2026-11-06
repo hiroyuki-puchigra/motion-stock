@@ -1,0 +1,20 @@
+* { box-sizing: border-box; margin: 0; }
+:root { --bg: #fff; --fg: #1a1a1a; --ease: cubic-bezier(.22, .8, .2, 1); }
+body.is-dark { --bg: #141414; --fg: #f0f0ec; }
+html { background: var(--bg); }
+body { background: var(--bg); color: var(--fg); font-family: "Noto Sans JP", sans-serif; min-height: 100vh; }
+/* 調整用の値：カウントの時間・幕の上がる時間 */
+:root {
+  --count-time: 1.8s;
+  --curtain-time: 1s;
+  --loader-bg: #26352c;
+}
+.loader { position: fixed; inset: 0; z-index: 10; background: var(--loader-bg); color: #fff; display: grid; place-content: center; text-align: center; gap: 12px; transition: transform var(--curtain-time) var(--ease); }
+.loader.is-done { transform: translateY(-100%); }
+.loader__count { font-size: clamp(48px, 10vw, 96px); font-weight: 300; font-variant-numeric: tabular-nums; letter-spacing: .04em; }
+.loader__count small { font-size: .35em; margin-left: 4px; }
+.loader__name { font-size: 12px; letter-spacing: .4em; opacity: .7; }
+.page { min-height: 100vh; display: grid; place-items: center; padding: 0 6vw; }
+.page__title { font-size: clamp(26px, 6vw, 56px); font-weight: 500; letter-spacing: .08em; line-height: 1.6; opacity: 0; transform: translateY(24px); transition: opacity 1s var(--ease), transform 1s var(--ease); }
+body.is-ready .page__title { opacity: 1; transform: none; transition-delay: .5s; }
+@media (prefers-reduced-motion: reduce) { .loader { display: none; } .page__title { opacity: 1; transform: none; transition: none; } }
